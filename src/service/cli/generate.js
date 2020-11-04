@@ -4,6 +4,7 @@ const fs = require(`fs`);
 const {
   getRandomInt,
   shuffle,
+  getRandomArray,
 } = require(`../../utils`);
 
 const DEFAULT_COUNT = 1;
@@ -57,8 +58,10 @@ const PictureRestrict = {
 const getPictureFileName = (number) => number > 10 ? `item${number}.jpg` : `item0${number}.jpg`;
 
 const generateOffers = (count) => (
-  Array(count).fill({}).map(() => ({
-    category: [CATEGORIES[getRandomInt(0, CATEGORIES.length - 1)]],
+  Array.from({
+    length: count
+  }, () => ({
+    category: getRandomArray(CATEGORIES),
     description: shuffle(SENTENCES).slice(1, 5).join(` `),
     picture: getPictureFileName(getRandomInt(PictureRestrict.min, PictureRestrict.max)),
     title: TITLES[getRandomInt(0, TITLES.length - 1)],
