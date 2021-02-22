@@ -42,9 +42,9 @@ const readContent = async (filePath) => {
 
 const getPictureFileName = (number) => number > 10 ? `item${number}.jpg` : `item0${number}.jpg`;
 
-const generateOffers = (count, categories, sentences, titles) => (
+const generateOffers = (count, [sentences, titles, categories]) => (
   Array.from({
-    length: count
+    length: count,
   }, () => ({
     category: getRandomArray(categories),
     description: shuffle(sentences).slice(1, 5).join(` `),
@@ -60,10 +60,8 @@ module.exports = {
   async run(args) {
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const sentences = await readContent(FILE_SENTENCES);
-    const titles = await readContent(FILE_TITLES);
-    const categories = await readContent(FILE_CATEGORIES);
-    const content = JSON.stringify(generateOffers(countOffer, categories, sentences, titles));
+    const data = await Promise.all([readContent(FILE_SENTENCES), readContent(FILE_TITLES), readContent(FILE_CATEGORIES)]);
+    const content = JSON.stringify(generateOffers(countOffer, data));
 
     try {
       await fs.writeFile(FILE_NAME, content);
@@ -71,5 +69,5 @@ module.exports = {
     } catch (err) {
       console.error(chalk.red(`Can't write data to file...`));
     }
-  }
+  },
 };
